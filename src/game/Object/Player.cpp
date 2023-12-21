@@ -26271,7 +26271,9 @@ bool Player::LearnTalent(uint32 talentId, uint32 talentRank)
     }
 
     // player has not spent 31 talents in main tree before attempting to learn other tree's talents
-    if (!isMainTree && primaryTreeTalents < REQ_PRIMARY_TREE_TALENTS)
+	//JIFEDIT config for req primary talents
+    //if (!isMainTree && primaryTreeTalents < REQ_PRIMARY_TREE_TALENTS)
+    if (!isMainTree && primaryTreeTalents < sWorld.getConfig(CONFIG_UINT32_MIN_LEVEL_FOR_RAID))
     {
         return false;
     }
@@ -26295,20 +26297,25 @@ bool Player::LearnTalent(uint32 talentId, uint32 talentRank)
     DETAIL_LOG("TalentID: %u Rank: %u Spell: %u\n", talentId, talentRank, spellid);
 
     // set talent tree for player
-    if (!m_talentsPrimaryTree[m_activeSpec])
+    if (!m_talentsPrimaryTree[m_activeSpec])	//JIFEDIT learn spells from all talent trees
     {
         m_talentsPrimaryTree[m_activeSpec] = talentInfo->TalentTab;
-        if (std::vector<uint32> const* specSpells = GetTalentTreeMasterySpells(talentInfo->TalentTab))
+        //if (std::vector<uint32> const* specSpells = GetTalentTreeMasterySpells(talentInfo->TalentTab))
+    for (uint32 e = 0; e < MAX_TALENT_TABS; ++e)
+    {
+        if (std::vector<uint32> const* specSpells = GetTalentTreeMasterySpells(GetTalentTabPages(getClass())[e]))
             for (size_t i = 0; i < specSpells->size(); ++i)
             {
                 learnSpell(specSpells->at(i), false);
             }
 
-        if (std::vector<uint32> const* specSpells = GetTalentTreePrimarySpells(talentInfo->TalentTab))
+        //if (std::vector<uint32> const* specSpells = GetTalentTreePrimarySpells(talentInfo->TalentTab))
+        if (std::vector<uint32> const* specSpells = GetTalentTreePrimarySpells(GetTalentTabPages(getClass())[e]))
             for (size_t i = 0; i < specSpells->size(); ++i)
             {
                 learnSpell(specSpells->at(i), false);
             }
+	}
 
         // Update talent tree role-dependent mana regen
         UpdateManaRegen();

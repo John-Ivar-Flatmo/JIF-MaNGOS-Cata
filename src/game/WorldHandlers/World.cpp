@@ -984,6 +984,7 @@ void World::LoadConfigSettings(bool reload)
     }
 
     setConfig(CONFIG_UINT32_MIN_LEVEL_FOR_RAID, "Raid.MinLevel", 10);
+	setConfig(CONFIG_UINT32_REQ_PRIMARY_TREE_TALENTS, "unlockSecoundaryTalentTreeLevel", 31);	//JIFEDIT
 
     ///- Read the "Data" directory from the config file
     std::string dataPath = sConfig.GetStringDefault("DataDir", "./");
