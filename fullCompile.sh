@@ -5,8 +5,7 @@
 
 scriptDir="${PWD}" ##find the real script dir
 
-rm -r ./built
-rm -r ./build
+rm -r "$scriptDir/build"
 
 ##threads=$((`nproc`+1)) ##available cores +1 to ensure fast compile time
 ##threads=$(((`nproc`)/2)) ##half of available threads +1 for reduced ram usage and not cook system
@@ -17,11 +16,11 @@ if [ "$threads" -eq "0" ]; then
 fi
 echo "threads: $threads"
 
-##fix for recent commit breaking build, needing higher versions of compilers
-export CC=/usr/bin/gcc-13
-export CXX=/usr/bin/g++-13
+export CC=/usr/bin/clang	##mangos seems to prefer clang for building, fine
+export CXX=/usr/bin/clang++
 
-cmakeFlags=" -DCMAKE_INSTALL_PREFIX=$scriptDir/built -DBUILD_EXTRACTORS=OFF -DPCH=0 -DDEBUG=1 -DBUILD_PLAYERBOT=ON -DBUILD_AHBOT=ON"
+cmakeFlags=" -DCMAKE_INSTALL_PREFIX=$buildDir/build/built -DBUILD_MANGOSD:BOOL=1 -DBUILD_REALMD:BOOL=1 -DBUILD_TOOLS:BOOL=0 -DUSE_STORMLIB:BOOL=1 -DSCRIPT_LIB_ELUNA:BOOL=1 -DSCRIPT_LIB_SD3:BOOL=1 -DSOAP:BOOL=1 -DPLAYERBOTS:BOOL=1 -DPCH:BOOL=1 -DDEBUG:BOOL=1"
+# wont build without PCH enabled atm	##tools broke atm
 mkdir "$scriptDir/build"
 cd "$scriptDir/build"
 cmake "$scriptDir/" $cmakeFlags
